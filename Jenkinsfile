@@ -9,8 +9,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'dir'
-                echo 'pwd'
+                bat 'dir'
+                bat 'pwd'
                 bat 'mvn clean package'
             }
         }
