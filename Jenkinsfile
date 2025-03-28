@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Check Maven') {
+        stage('Check Maven Installation') {
             steps {
                 bat 'mvn -version'
             }
@@ -23,9 +23,9 @@ pipeline {
             steps {
                 script {
                     if (!fileExists('pom.xml')) {
-                        error "pom.xml not found! Make sure it's in the repository root."
+                        error "❌ pom.xml not found! Make sure it's in the repository root."
                     } else {
-                        echo "pom.xml found!"
+                        echo "✅ pom.xml found!"
                     }
                 }
             }
@@ -36,15 +36,21 @@ pipeline {
                 script {
                     def result = bat(returnStatus: true, script: 'mvn clean package -X')
                     if (result != 0) {
-                        error "Maven build failed! Check logs for errors."
+                        error "❌ Maven build failed! Check logs for errors."
                     }
                 }
             }
         }
 
-        stage('List Target Directory') {
+        stage('Verify Target Directory') {
             steps {
-                bat 'dir target'
+                script {
+                    if (!fileExists('target')) {
+                        error "❌ Target directory not found! Build might have failed."
+                    } else {
+                        echo "✅ Target directory found!"
+                    }
+                }
             }
         }
 
@@ -53,9 +59,9 @@ pipeline {
                 script {
                     def jarPath = 'target/simple-java-project-1.0-SNAPSHOT.jar'
                     if (!fileExists(jarPath)) {
-                        error "JAR file not found! Build might have failed."
+                        error "❌ JAR file not found! Build might have failed."
                     } else {
-                        echo "JAR file found: ${jarPath}"
+                        echo "✅ JAR file found: ${jarPath}"
                     }
                 }
             }
