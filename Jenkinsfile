@@ -9,12 +9,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat 'mvn clean package'
+                sh 'mvn clean package'
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test'
+                sh 'mvn test'
             }
         }
         stage('Run JAR') { 
@@ -22,7 +22,7 @@ pipeline {
                 script {
                     def jarPath = 'target/simple-java-project-1.0-SNAPSHOT.jar'
                     if (fileExists(jarPath)) {
-                        def output = bat(returnStdout: true, script: "java -jar ${jarPath}").trim()
+                        def output = sh(returnStdout: true, script: "java -jar ${jarPath}").trim()
                         echo "Output from JAR: ${output}"
                     } else {
                         error "JAR file not found! Ensure 'mvn clean package' is successful."
