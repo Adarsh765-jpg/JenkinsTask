@@ -1,24 +1,18 @@
+
 pipeline {
     agent any
-
     tools {
-        maven 'Maven' // Use the configured Maven in Jenkins
+        maven 'maven'  // Use the exact name you set in Global Tool Configuration
     }
-
-    environment {
-        MAVEN_HOME = "C:\\Program Files\\Apache\\maven"
-        PATH = "${MAVEN_HOME}\\bin;${env.PATH}"
-    }
-
     stages {
         stage('Build') {
             steps {
-                bat 'mvn clean package'
+                sh 'mvn clean package'
             }
         }
-        stage('Run JAR') {
+        stage('Test') {
             steps {
-                bat 'java -jar target/simple-java-project-1.0-SNAPSHOT.jar'
+                sh 'mvn test'
             }
         }
     }
