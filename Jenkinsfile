@@ -2,34 +2,33 @@ pipeline {
 
     agent any
 
-    tools{
+    tools {
         maven "maven"
     }
 
     stages {
-        stage('Build'){
-            steps{
+        stage('Build') {
+            steps {
                 bat 'mvn clean package'
             }
         }
-        stage('Test'){
-            steps{
+        stage('Test') {
+            steps {
                 bat 'mvn test'
             }
         }
         stage('Run JAR') { 
-           steps { 
-               script {
-            // if (fileExists('target/simple-java-project-1.0-SNAPSHOT.jar')) {
-                def output = bat(returnStdout: true, script: 'java -jar target/simple-java-project-1.0-SNAPSHOT.jar').trim()
-                echo "Output from JAR: ${output}"
-            // } else {
-                // error "JAR file not found! Ensure the build process creates the JAR."
-            // }
+            steps { 
+                script {
+                    def jarPath = 'target/simple-java-project-1.0-SNAPSHOT.jar'
+                    if (fileExists(jarPath)) {
+                        def output = bat(returnStdout: true, script: "java -jar ${jarPath}").trim()
+                        echo "Output from JAR: ${output}"
+                    } else {
+                        error "JAR file not found! Ensure 'mvn clean package' is successful."
+                    }
+                }
+            }
         }
-    }
-}
-
-        
     }
 }
