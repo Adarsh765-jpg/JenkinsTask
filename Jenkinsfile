@@ -12,12 +12,31 @@ pipeline {
             }
         }
 
+        stage('Check Git Clone') {
+            steps {
+                bat 'git status'
+                bat 'dir'
+            }
+        }
+
+        stage('Check pom.xml') {
+            steps {
+                script {
+                    if (!fileExists('pom.xml')) {
+                        error "pom.xml not found! Make sure it's in the repository root."
+                    } else {
+                        echo "pom.xml found!"
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    def result = bat(returnStatus: true, script: 'mvn clean package')
+                    def result = bat(returnStatus: true, script: 'mvn clean package -X')
                     if (result != 0) {
-                        error "Maven build failed!"
+                        error "Maven build failed! Check logs for errors."
                     }
                 }
             }
