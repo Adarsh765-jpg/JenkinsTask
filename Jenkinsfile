@@ -6,11 +6,29 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Check Maven') {
             steps {
-                bat 'mvn clean package'
+                bat 'mvn -version'
             }
         }
+
+        stage('Build') {
+            steps {
+                script {
+                    def result = bat(returnStatus: true, script: 'mvn clean package')
+                    if (result != 0) {
+                        error "Maven build failed!"
+                    }
+                }
+            }
+        }
+
+        stage('List Target Directory') {
+            steps {
+                bat 'dir target'
+            }
+        }
+
         stage('Verify JAR') {
             steps {
                 script {
@@ -23,6 +41,7 @@ pipeline {
                 }
             }
         }
+
         stage('Run JAR') { 
             steps { 
                 script {
