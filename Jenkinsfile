@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     tools {
@@ -9,24 +8,27 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                bat 'mvn clean package'
             }
         }
-        stage('Test') {
+        stage('Verify JAR') {
             steps {
-                sh 'mvn test'
+                script {
+                    def jarPath = 'target/simple-java-project-1.0-SNAPSHOT.jar'
+                    if (!fileExists(jarPath)) {
+                        error "JAR file not found! Build might have failed."
+                    } else {
+                        echo "JAR file found: ${jarPath}"
+                    }
+                }
             }
         }
         stage('Run JAR') { 
             steps { 
                 script {
                     def jarPath = 'target/simple-java-project-1.0-SNAPSHOT.jar'
-                    if (fileExists(jarPath)) {
-                        def output = sh(returnStdout: true, script: "java -jar ${jarPath}").trim()
-                        echo "Output from JAR: ${output}"
-                    } else {
-                        error "JAR file not found! Ensure 'mvn clean package' is successful."
-                    }
+                    def output = bat(returnStdout: true, script: "java -jar ${jarPath}").trim()
+                    echo "Output from JAR: ${output}"
                 }
             }
         }
